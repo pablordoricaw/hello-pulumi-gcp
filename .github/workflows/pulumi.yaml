@@ -1,0 +1,37 @@
+name: Deploy IaC with Pulumi
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  preview:
+    permissions:
+      id-token: write
+      contents: read
+    name: Preview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          workload_identity_provider: /projects/491900032446/locations/global/workloadIdentityPools/pulumi-cloud-pool/providers/pulumi-cloud
+          service_account: spn-pulumi-cloud@hello-pulumi-435400.iam.gserviceaccount.com
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Install dependencies
+        run: pip3 install -r requirements.txt
+
+      - name: Deploy infra
+        uses: pulumi/actions@v6
+        with:
+          command: preview
+          stack-name: pablordoricaw/dev
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
