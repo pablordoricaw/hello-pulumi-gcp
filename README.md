@@ -81,4 +81,13 @@ After a few unsuccessful tries to fix the issue with Pulumi Deployments and GCP 
 
 First thing, I stored a Pulumi Cloud access token in the secrets of the repo for GitHub actions to authenticate with Pulumi Cloud. This token expires on 12/20/204
 
+#### GitHub and GCP
 
+I created a new service account called `github` and a new workload identity pool called `github-actions-pool` following the same instructions that I did to create the Pulumi ones.
+
+Then in the `pulumi.yaml` GitHub Actions workflow I used these to authenticate with GCP. The following 
+
+- [GitHub docs](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform) 
+- [GCP docs](https://cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines#by-pool)
+
+were useful for this step.
