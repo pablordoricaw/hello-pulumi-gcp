@@ -40,3 +40,45 @@ I enabled the required APIS for workload identity federation on the GCP project 
 Then I proceeded to configure workload identity federation following the Pulumi docs linked above. 
 
 Then I moved to configure the Deployment settings for the `dev` stack of the Pulumi Cloud project.
+
+### Pulumi Deployments & GCP Error
+
+I ran into the error below when deploying the `hello-pulumi` project with Pulumi Cloud and GCP.
+
+```
+Type                   Name              Status                  Info
+     pulumi:pulumi:Stack    hello-pulumi-dev  **failed**              1 error; 1 message
+ +   ├─ gcp:storage:Bucket  my-bucket         **creating failed**     1 error
+     └─ gcp:storage:Bucket  my-bucket
+         **failed**              1 error
+ 
+Diagnostics:
+  pulumi:pulumi:Stack (hello-pulumi-dev):
+    error: update failed
+    Error creating bucket my-bucket-0274da0: Post "https://storage.googleapis.com/storage/v1/b?alt=json&prettyPrint=false&project=hello-pulumi-435400": oauth2/google: unable to generate access token: Post "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/spn-pulumi-cloud@hello-pulumi-435400.iam.gserviceaccount.com:generateAccessToken": oauth2/google: status code 400: {"error":"invalid_target","error_description":"The target service indicated by the \"audience\" parameters is invalid. This might either be because the pool or provider is disabled or deleted or because it doesn't exist."}
+ 
+  gcp:storage:Bucket (my-bucket):
+    error: 1 error occurred:
+    	* Post "https://storage.googleapis.com/storage/v1/b?alt=json&prettyPrint=false&project=hello-pulumi-435400": oauth2/google: unable to generate access token: Post "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/spn-pulumi-cloud@hello-pulumi-435400.iam.gserviceaccount.com:generateAccessToken": oauth2/google: status code 400: {"error":"invalid_target","error_description":"The target service indicated by the \"audience\" parameters is invalid. This might either be because the pool or provider is disabled or deleted or because it doesn't exist."}
+ 
+  gcp:storage:Bucket (my-bucket
+):
+    error:   sdk-v2/provider2.go:385: sdk.helper_schema: Post "https://storage.googleapis.com/storage/v1/b?alt=json&prettyPrint=false&project=hello-pulumi-435400": oauth2/google: unable to generate access token: Post "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/spn-pulumi-cloud@hello-pulumi-435400.iam.gserviceaccount.com:generateAccessToken": oauth2/google: status code 400: {"error":"invalid_target","error_description":"The target service indicated by the \"audience\" parameters is invalid. This might either be because the pool or provider is disabled or deleted or because it doesn't exist."}: provider=google-beta@7.38.0
+ 
+Resources:
+    1 unchanged
+```
+
+Additionally, I missed the deployment happening right next to my code. I wasn't a big fan of having to go into Pulumi Cloud to check the deployment.
+
+The PR chatbot feature was cool though...
+
+### GitHub Actions to the Rescue!
+
+After a few unsuccessful tries to fix the issue with Pulumi Deployments and GCP cloud, I gave GitHub Actions a run.
+
+#### GitHub and Pulumi Cloud
+
+First thing, I stored a Pulumi Cloud access token in the secrets of the repo for GitHub actions to authenticate with Pulumi Cloud. This token expires on 12/20/204
+
+
