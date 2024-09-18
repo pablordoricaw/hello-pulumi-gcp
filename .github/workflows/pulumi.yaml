@@ -26,7 +26,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          pattern: gha-creds-*.json
+          pattern: gha-creds-*
 
       - name: Set up Python
         uses: actions/setup-python@v4
