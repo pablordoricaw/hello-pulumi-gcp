@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  pulumi:
+  pulumi-preview:
     permissions:
       id-token: write
       contents: read
-    name: Pulumi
+    name: Pulumi Preview 📄
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +37,33 @@ jobs:
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
+      - name: Save preview plan 💾
+        uses: actions/upload-artifact@v4
+        with:
+          name: pulumi_plan.json
+          path: ${{ githb.workspace }}/pulumi_plan.json
+
+  pulumi-up:
+    permissions:
+      id-token: write
+      contents: read
+    name: Pulumi Update 🚀
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          workload_identity_provider: projects/491900032446/locations/global/workloadIdentityPools/github-pool/providers/my-repo
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip3 install -r requirements.txt
       - name: Update infra
         uses: pulumi/actions@v5
         with:
@@ -44,3 +71,11 @@ jobs:
           stack-name: ${{ env.PULUMI_ORG }}/${{ env.PULUMI_STACK }}
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - name: Get Pulumi plan ⬇️
+        uses: actions/download-artifact@v4
+        with:
+          name: pulumi_plan.json 
+
+      - name: ls
+        run: ls -la
