@@ -12,6 +12,7 @@ jobs:
       contents: read
     name: Pulumi
     runs-on: ubuntu-latest
+    environment: ${{ vars.PULUMI_ORG }}/${{ vars.PULUMI_PROJECT }}/${{ vars.PULUMI_STACK }}
     steps:
       - uses: actions/checkout@v4
 
