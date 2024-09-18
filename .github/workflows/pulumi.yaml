@@ -25,6 +25,7 @@ jobs:
         with:
           organization: pablordoricaw
           requested-token-type: urn:pulumi:token-type:access_token:personal
+          scope: user:pablordoricaw
 
       - name: Set up Python
         uses: actions/setup-python@v4
