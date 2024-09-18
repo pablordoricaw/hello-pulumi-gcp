@@ -55,7 +55,7 @@ jobs:
 
       - uses: google-github-actions/auth@v2
         with:
-          project_id: ${{ env.GCP_PROJECT_ID }}
+          project_id: ${{ vars.GCP_PROJECT_ID }}
           workload_identity_provider: projects/491900032446/locations/global/workloadIdentityPools/github-pool/providers/my-repo
 
       - name: Set up Python
@@ -65,13 +65,6 @@ jobs:
 
       - name: Install dependencies
         run: pip3 install -r requirements.txt
-      - name: Update infra
-        uses: pulumi/actions@v5
-        with:
-          command: update
-          stack-name: ${{ env.PULUMI_ORG }}/${{ env.PULUMI_STACK }}
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
       - name: Get Pulumi plan ⬇️
         uses: actions/download-artifact@v4
@@ -80,3 +73,11 @@ jobs:
 
       - name: ls
         run: ls -la
+
+#      - name: Update infra
+#        uses: pulumi/actions@v5
+#        with:
+#          command: update
+#          stack-name: ${{ env.PULUMI_ORG }}/${{ env.PULUMI_STACK }}
+#        env:
+#          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
