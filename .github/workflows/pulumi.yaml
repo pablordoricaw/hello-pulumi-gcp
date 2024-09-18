@@ -7,6 +7,7 @@ on:
 
 jobs:
   pulumi-preview:
+    id: pulumi-preview
     permissions:
       id-token: write
       contents: read
@@ -44,6 +45,7 @@ jobs:
           path: ${{ github.workspace }}/pulumi_plan.json
 
   pulumi-up:
+    needs: pulumi-preview
     permissions:
       id-token: write
       contents: read
