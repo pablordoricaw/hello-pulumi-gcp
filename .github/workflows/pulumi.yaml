@@ -10,7 +10,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    name: Preview
+    name: Update 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,6 +20,12 @@ jobs:
           project_id: ${{ env.GCP_PROJECT_ID }}
           workload_identity_provider: projects/491900032446/locations/global/workloadIdentityPools/github-actions-pool/providers/github
           service_account: github-actions@hello-pulumi-435400.iam.gserviceaccount.com
+
+      - name: pulumi/auth-actions@v1
+        with:
+          organization: pablordoricaw
+          requested-token-type: urn:pulumi:token-type:access_token:organization
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -28,18 +34,8 @@ jobs:
       - name: Install dependencies
         run: pip3 install -r requirements.txt
 
-      - name: Preview infra
-        uses: pulumi/actions@v5
-        with:
-          command: preview
-          stack-name: pablordoricaw/dev
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-
       - name: Update infra
         uses: pulumi/actions@v5
         with:
-          command: update
+          command: up
           stack-name: pablordoricaw/dev
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
