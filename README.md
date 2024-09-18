@@ -11,19 +11,9 @@ I have a personal Pulumi Cloud account not an organization. In all the sections 
 
 From following the Get started with Pulumi & Google Cloud tutorial I had already created a project in Pulumi Cloud called `hello-pulumi` with a stack called `dev`.
 
-#### Configure OpenID Connect Between Pulumi Cloud and GitHub
+#### Generate Pulumi Cloud Access Token
 
-Followed the Pulumi docs on [Configuring OpenID Connect for Github](https://www.pulumi.com/docs/pulumi-cloud/access-management/oidc/client/github/) to configure OIDC betwwen Pulumi Cloud and GitHub.
-
-#### Configure Deployment for `dev` Stack
-
-After completing the [Configure Workload Identity Federation](#configure-workload-identity-federation) section below I configured the Pulumi Deployment settings for the `dev` stack in the `hello-pulumi` project following this [Pulumi docs](https://www.pulumi.com/docs/pulumi-cloud/deployments/get-started/#configure-deployment-settings).
-
-### GitHub
-
-Installed the Pulumi GitHub App following the (`Pulumi docs on Installation and Configuration`](https://www.pulumi.com/docs/iac/packages-and-automation/continuous-delivery/github-app/#installation-and-configuration).
-
-This is to enable Pulumi Cloud Deployments to be able to listen to events on my repos to be able to deploy IaC with Pulumi Cloud.
+The Pulumi auth GitHub action that uses OIDC doesn't work. So I had to generate a personal access token in Pulumi Cloud and store it as a secret of the repo to use to authenticate. 
 
 ### GCP
 
@@ -31,15 +21,21 @@ I had previously created a project in GCP with the Pulumi CLI, called `hello-pul
 
 #### Configure Workload Identity Federation
 
+I configured direct workload identity federation following this section of the GCP auth GitHub Action [README](https://github.com/google-github-actions/auth?tab=readme-ov-file#preferred-direct-workload-identity-federation).
+
 I enabled the required APIS for workload identity federation on the GCP project following the second step of this [GCP docs](https://cloud.google.com/iam/docs/workload-identity-federation-with-other-providers#configure). As pointed out by the [Configuring OpenID Connect for Google Cloud](https://www.pulumi.com/docs/pulumi-cloud/access-management/oidc/provider/gcp/) Pulumi docs, those APIs are:
 - Identity and Access Management (IAM) API, 
 - Cloud Resource Manager API, 
 - IAM Service account Credentials API and 
 - Security Token Service API enabled.
 
-Then I proceeded to configure workload identity federation following the Pulumi docs linked above. 
+### Undo stuff below
 
-Then I moved to configure the Deployment settings for the `dev` stack of the Pulumi Cloud project.
+### GitHub
+
+Installed the Pulumi GitHub App following the (`Pulumi docs on Installation and Configuration`](https://www.pulumi.com/docs/iac/packages-and-automation/continuous-delivery/github-app/#installation-and-configuration).
+
+This is to enable Pulumi Cloud Deployments to be able to listen to events on my repos to be able to deploy IaC with Pulumi Cloud.
 
 ### Pulumi Deployments & GCP Error
 
@@ -77,17 +73,3 @@ The PR chatbot feature was cool though...
 
 After a few unsuccessful tries to fix the issue with Pulumi Deployments and GCP cloud, I gave GitHub Actions a run.
 
-#### GitHub and Pulumi Cloud
-
-First thing, I stored a Pulumi Cloud access token in the secrets of the repo for GitHub actions to authenticate with Pulumi Cloud. This token expires on 12/20/204
-
-#### GitHub and GCP
-
-I created a new service account called `github` and a new workload identity pool called `github-actions-pool` following the same instructions that I did to create the Pulumi ones.
-
-Then in the `pulumi.yaml` GitHub Actions workflow I used these to authenticate with GCP. The following 
-
-- [GitHub docs](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform) 
-- [GCP docs](https://cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines#by-pool)
-
-were useful for this step.
