@@ -1,19 +1,55 @@
 # Hello Pulumi
 
-This repository uses the [Get started with Pulumi & Google Cloud](https://www.pulumi.com/docs/iac/get-started/gcp/) tutorial to investigate how to deploy infrastructure to GCP in an automated fashion with Pulumi Cloud from a GitHub repository.
+This repository uses the Python [Get started with Pulumi & Google Cloud](https://www.pulumi.com/docs/iac/get-started/gcp/) tutorial to investigate how to deploy infrastructure to GCP in an automated fashion with Pulumi Cloud from a GitHub repository.
+
+## Methods
+
+There are a couple methods to accomplish deploying Pulumi based infrastructure to GCP from a GitHub repository:
+
+1. Pulumi Cloud backend + Pulumi Deployments + GitHub Repo
+2. Pulumi Cloud backend + GitHub Actions + GitHub Repo
+3. Self-managed backend in GCP + Pulumi Deployments + GitHub Repo
+4. Self-managed backend in GCP + GitHub Actions + GitHub Repo
+
+*This repository shows the setup for Pulumi Cloud backend + GitHub Actions + GitHub Repo*.
+
+> [!NOTE]
+> The first method, Pulumi Cloud backend + Pulumi Deployments + GitHub Repo, was attempted. However, I couldn't get the authentication for Pulumi Deployments and GCp setup properly.
+
 ## Setup
 
-This section describes the setup across all platforms and tools.
+The setup was done as follows:
+
+- Pulumi Cloud manages the IaC state
+- GitHub Actions automates the deployment of changes to the IaC
+- GCP is where the infra is deployed.
+
+The subsections describe the setup to accomplish deploying Pulumi based infrastructure to GCP with GitHub Actions.
+
+### Pre-requisites
+
+To perform the setups I installed on my local machines:
+
+- the Pulumi CLI following the [Pulumi Download & install Pulumi docs](https://www.pulumi.com/docs/iac/download-install/)
+- the Google Cloud CLI (`gcloud` CLI) following the [GCP Install the gcloud CLI docs](https://cloud.google.com/sdk/docs/install)
 
 ### Pulumi Cloud
 
-I have a personal Pulumi Cloud account not an organization. In all the sections below my personal account was used instead of an orgaccount.
+I have a personal Pulumi Cloud account not an organization.
+
+> [!NOTE]
+> In all the sections below my personal account was used whenever Pulumi asked for an organization account.
 
 From following the Get started with Pulumi & Google Cloud tutorial I had already created a project in Pulumi Cloud called `hello-pulumi` with a stack called `dev`.
 
-#### Generate Pulumi Cloud Access Token
+#### Pulumi Cloud 🤝 GitHub Actions
 
-The Pulumi auth GitHub action that uses OIDC doesn't work. So I had to generate a personal access token in Pulumi Cloud and store it as a secret of the repo to use to authenticate. 
+GitHub needs to authenticate with Pulumi Cloud that has the state. The authentication was setup through a Pulumi Cloud access token.
+
+> [!WARNING]
+> I couldn't get the authentication to work with OIDC for my personal account. It seems that the Pulumi auth GitHub Action expects a Pulumi org account instead of a personal.
+
+The *Creating Personal Access Tokens* section of the following [Pulumi docs](https://www.pulumi.com/docs/pulumi-cloud/access-management/access-tokens/) walks through the steps on how to do create the token.
 
 ### GCP
 
@@ -29,47 +65,8 @@ I enabled the required APIS for workload identity federation on the GCP project 
 - IAM Service account Credentials API and 
 - Security Token Service API enabled.
 
-### Undo stuff below
+#### GCP 🤝 GitHub Actions
 
-### GitHub
+GitHub Actions needs to authenticate with GCP in order to deploy the IaC. The authentication was setup via the Workload Idnetity Federation setup in the previous section.
 
-Installed the Pulumi GitHub App following the (`Pulumi docs on Installation and Configuration`](https://www.pulumi.com/docs/iac/packages-and-automation/continuous-delivery/github-app/#installation-and-configuration).
-
-This is to enable Pulumi Cloud Deployments to be able to listen to events on my repos to be able to deploy IaC with Pulumi Cloud.
-
-### Pulumi Deployments & GCP Error
-
-I ran into the error below when deploying the `hello-pulumi` project with Pulumi Cloud and GCP.
-
-```
-Type                   Name              Status                  Info
-     pulumi:pulumi:Stack    hello-pulumi-dev  **failed**              1 error; 1 message
- +   ├─ gcp:storage:Bucket  my-bucket         **creating failed**     1 error
-     └─ gcp:storage:Bucket  my-bucket
-         **failed**              1 error
- 
-Diagnostics:
-  pulumi:pulumi:Stack (hello-pulumi-dev):
-    error: update failed
-    Error creating bucket my-bucket-0274da0: Post "https://storage.googleapis.com/storage/v1/b?alt=json&prettyPrint=false&project=hello-pulumi-435400": oauth2/google: unable to generate access token: Post "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/spn-pulumi-cloud@hello-pulumi-435400.iam.gserviceaccount.com:generateAccessToken": oauth2/google: status code 400: {"error":"invalid_target","error_description":"The target service indicated by the \"audience\" parameters is invalid. This might either be because the pool or provider is disabled or deleted or because it doesn't exist."}
- 
-  gcp:storage:Bucket (my-bucket):
-    error: 1 error occurred:
-    	* Post "https://storage.googleapis.com/storage/v1/b?alt=json&prettyPrint=false&project=hello-pulumi-435400": oauth2/google: unable to generate access token: Post "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/spn-pulumi-cloud@hello-pulumi-435400.iam.gserviceaccount.com:generateAccessToken": oauth2/google: status code 400: {"error":"invalid_target","error_description":"The target service indicated by the \"audience\" parameters is invalid. This might either be because the pool or provider is disabled or deleted or because it doesn't exist."}
- 
-  gcp:storage:Bucket (my-bucket
-):
-    error:   sdk-v2/provider2.go:385: sdk.helper_schema: Post "https://storage.googleapis.com/storage/v1/b?alt=json&prettyPrint=false&project=hello-pulumi-435400": oauth2/google: unable to generate access token: Post "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/spn-pulumi-cloud@hello-pulumi-435400.iam.gserviceaccount.com:generateAccessToken": oauth2/google: status code 400: {"error":"invalid_target","error_description":"The target service indicated by the \"audience\" parameters is invalid. This might either be because the pool or provider is disabled or deleted or because it doesn't exist."}: provider=google-beta@7.38.0
- 
-Resources:
-    1 unchanged
-```
-
-Additionally, I missed the deployment happening right next to my code. I wasn't a big fan of having to go into Pulumi Cloud to check the deployment.
-
-The PR chatbot feature was cool though...
-
-### GitHub Actions to the Rescue!
-
-After a few unsuccessful tries to fix the issue with Pulumi Deployments and GCP cloud, I gave GitHub Actions a run.
-
+I followed the [(Preferred) Direct Workload Identity Federation](https://github.com/google-github-actions/auth?tab=readme-ov-file#direct-wif) section of the `google-github-actions/auth` GitHub action.
