@@ -22,11 +22,10 @@ jobs:
           service_account: github-actions@hello-pulumi-435400.iam.gserviceaccount.com
 
       - name: Look for GCP Creds
-        run: ls -la /home/runner/work/hello-pulumi/hello-pulumi/
+        run: ls -la
 
       - uses: actions/download-artifact@v4
         with:
-          path: /home/runner/work/hello-pulumi/hello-pulumi/
           pattern: gha-creds-*.json
 
       - name: Set up Python
