@@ -21,7 +21,7 @@ jobs:
           workload_identity_provider: projects/491900032446/locations/global/workloadIdentityPools/github-actions-pool/providers/github
           service_account: github-actions@hello-pulumi-435400.iam.gserviceaccount.com
 
-      - name: pulumi/auth-actions@v1
+      - uses: pulumi/auth-actions@v1
         with:
           organization: pablordoricaw
           requested-token-type: urn:pulumi:token-type:access_token:organization
