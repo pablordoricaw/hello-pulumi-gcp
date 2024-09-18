@@ -71,13 +71,10 @@ jobs:
         with:
           name: pulumi_plan.json 
 
-      - name: ls
-        run: ls -la
-
-#      - name: Update infra
-#        uses: pulumi/actions@v5
-#        with:
-#          command: update
-#          stack-name: ${{ env.PULUMI_ORG }}/${{ env.PULUMI_STACK }}
-#        env:
-#          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      - name: Update infra
+        uses: pulumi/actions@v5
+        with:
+          command: update
+          stack-name: ${{ vars.PULUMI_ORG }}/${{ vars.PULUMI_STACK }}
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
