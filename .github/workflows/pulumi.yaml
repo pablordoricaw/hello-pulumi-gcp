@@ -22,7 +22,7 @@ jobs:
           service_account: github-actions@hello-pulumi-435400.iam.gserviceaccount.com
       - uses: actions/download-artifact@v4
         with:
-          path: /home/runner/work/hello-pulumi/hello-pulumi/gha-creds-*.json
+          path: /home/runner/work/hello-pulumi/hello-pulumi/
 
       - name: Set up Python
         uses: actions/setup-python@v4
