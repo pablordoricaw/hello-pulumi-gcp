@@ -10,7 +10,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    name: Preview
+    name: Pulumi
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,12 +19,6 @@ jobs:
         with:
           project_id: ${{ env.GCP_PROJECT_ID }}
           workload_identity_provider: projects/491900032446/locations/global/workloadIdentityPools/github-pool/providers/my-repo
-
-      - name: Look for GCP Creds
-        run: ls -la
-
-      - name: Cat GCP Creds
-        run: cat gha-creds-*
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -38,7 +32,8 @@ jobs:
         uses: pulumi/actions@v5
         with:
           command: preview
-          stack-name: pablordoricaw/dev
+          stack-name: ${{ env.PULUMI_ORG }}/${{ env.PULUMI_STACK }}
+          plan: pulumi_plan.json
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
@@ -46,6 +41,6 @@ jobs:
         uses: pulumi/actions@v5
         with:
           command: update
-          stack-name: pablordoricaw/dev
+          stack-name: ${{ env.PULUMI_ORG }}/${{ env.PULUMI_STACK }}
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
