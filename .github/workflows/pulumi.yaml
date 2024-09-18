@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  pulumi-preview:
+  pulumi:
     permissions:
       id-token: write
       contents: read
-    name: Pulumi Preview 📄
+    name: Pulumi
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: pip3 install -r requirements.txt
 
-      - name: Preview infra
+      - name: Preview infra 🔍
         uses: pulumi/actions@v5
         with:
           command: preview
@@ -37,42 +37,8 @@ jobs:
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-      - name: Save preview plan 💾
-        uses: actions/upload-artifact@v4
-        with:
-          name: pulumi_plan.json
-          path: ${{ github.workspace }}/pulumi_plan.json
-
-  pulumi-up:
-    needs: pulumi-preview
-    if: ${{ github.event_name }} == 'workflow_dispatch'
-    permissions:
-      id-token: write
-      contents: read
-    name: Pulumi Update 🚀
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: google-github-actions/auth@v2
-        with:
-          project_id: ${{ vars.GCP_PROJECT_ID }}
-          workload_identity_provider: projects/491900032446/locations/global/workloadIdentityPools/github-pool/providers/my-repo
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: pip3 install -r requirements.txt
-
-      - name: Get Pulumi plan ⬇️
-        uses: actions/download-artifact@v4
-        with:
-          name: pulumi_plan.json 
-
-      - name: Update infra
+      - name: Update infra 🚀
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: pulumi/actions@v5
         with:
           command: update
