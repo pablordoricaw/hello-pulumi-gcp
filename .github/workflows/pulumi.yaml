@@ -24,9 +24,8 @@ jobs:
       - name: Look for GCP Creds
         run: ls -la
 
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: gha-creds-*
+      - name: Cat GCP Creds
+        run: cat gha-creds-*
 
       - name: Set up Python
         uses: actions/setup-python@v4
