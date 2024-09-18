@@ -18,8 +18,7 @@ jobs:
       - uses: google-github-actions/auth@v2
         with:
           project_id: ${{ env.GCP_PROJECT_ID }}
-          workload_identity_provider: projects/491900032446/locations/global/workloadIdentityPools/github-actions-pool/providers/github
-          service_account: github-actions@hello-pulumi-435400.iam.gserviceaccount.com
+          workload_identity_provider: projects/491900032446/locations/global/workloadIdentityPools/github-pool/providers/my-repo
 
       - name: Look for GCP Creds
         run: ls -la
