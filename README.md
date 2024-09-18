@@ -70,3 +70,10 @@ I enabled the required APIS for workload identity federation on the GCP project 
 GitHub Actions needs to authenticate with GCP in order to deploy the IaC. The authentication was setup via the Workload Idnetity Federation setup in the previous section.
 
 I followed the [(Preferred) Direct Workload Identity Federation](https://github.com/google-github-actions/auth?tab=readme-ov-file#direct-wif) section of the `google-github-actions/auth` GitHub action.
+
+## Deploy 🚀
+
+The GitHub Actions [`Deploy IaC with Pulumi'](./.github/workflows/pulumi.yaml) is set up such that it needs to be triggered manually in order to deploy to GCP. Every push to the `master` branch of the repo only generates a plan for any changes that the commit generated on the IaC.
+
+> [!IMPORTANT]
+> Make sure to destroy the created infrastructure on GCP since the code generates a publicly available bucket. Run `pulumi destroy` locally to destroy the created infrastructure in GCP.
