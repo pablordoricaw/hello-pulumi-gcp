@@ -20,6 +20,10 @@ jobs:
           project_id: ${{ env.GCP_PROJECT_ID }}
           workload_identity_provider: projects/491900032446/locations/global/workloadIdentityPools/github-actions-pool/providers/github
           service_account: github-actions@hello-pulumi-435400.iam.gserviceaccount.com
+      - uses: actions/download-artifact@v4
+        with:
+          path: /home/runner/work/hello-pulumi/hello-pulumi/gha-creds-*.json
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
