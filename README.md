@@ -73,7 +73,7 @@ I followed the [(Preferred) Direct Workload Identity Federation](https://github.
 
 ## Deploy 🚀
 
-The GitHub Actions [`Deploy IaC with Pulumi'](./.github/workflows/pulumi.yaml) is set up such that it needs to be triggered manually in order to deploy to GCP. Every push to the `master` branch of the repo only generates a plan for any changes that the commit generated on the IaC.
+The GitHub Actions [`Deploy IaC with Pulumi`](./.github/workflows/pulumi.yaml) is set up such that it needs to be triggered manually in order to deploy to GCP. Every push to the `master` branch of the repo only generates a plan for any changes that the commit generated on the IaC.
 
 > [!IMPORTANT]
 > Make sure to destroy the created infrastructure on GCP since the code generates a publicly available bucket. Run `pulumi destroy` locally to destroy the created infrastructure in GCP.
